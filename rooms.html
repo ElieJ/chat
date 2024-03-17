@@ -10,44 +10,43 @@
     <div id="roomsList"></div>
     
     <script>
-        function getQueryParam(param) {
-          const queryParams = new URLSearchParams(window.location.search);
-          params =  queryParams.get(param);
-          console.log('params ' + param)
-          return params
+        // This function now parses the URL path to find the userID
+        function getUserIDFromPath() {
+            const pathSegments = window.location.pathname.split('/');
+            const userIndex = pathSegments.findIndex(segment => segment === 'users');
+            return pathSegments[userIndex + 1];
         }
         
-        const userID = getQueryParam('id');
-        console.log(userID + " pre function call")
+        const userID = getUserIDFromPath();
+        console.log(userID + " pre function call");
         
         function fetchRooms() {
-          fetch(`/rooms`)
-          .then(response => response.json())
-          .then(data => {
-            updateRoomsList(data);
-
-          })
-          .catch(error => console.error('Error fetching rooms:', error));
+            fetch(`/rooms`)
+            .then(response => response.json())
+            .then(data => {
+                updateRoomsList(data);
+            })
+            .catch(error => console.error('Error fetching rooms:', error));
         }
+        
         function updateRoomsList(rooms) {
-          const roomsListElement = document.getElementById('roomsList');
-          roomsListElement.innerHTML = '';
-          
-          rooms.forEach(room => {
-            const roomElement = document.createElement('div');
-            roomElement.innerHTML = `<h2>${room.name}</h2>
-                <button onclick="joinRoom('${room.id}')">Join Room</button>`;
-            roomsListElement.appendChild(roomElement);
-          });
+            const roomsListElement = document.getElementById('roomsList');
+            roomsListElement.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const roomElement = document.createElement('div');
+                roomElement.innerHTML = `<h2>${room.name}</h2>
+                    <button onclick="joinRoom('${room.id}')">Join Room</button>`;
+                roomsListElement.appendChild(roomElement);
+            });
         }
+        
         function joinRoom(roomID) {
-          console.log(userID)
-          window.location.href = `/users/${userID}/rooms/${roomID}`;
+            console.log(userID);
+            window.location.href = `/users/${userID}/rooms/${roomID}`;
         }
         
         document.addEventListener('DOMContentLoaded', fetchRooms);
-        </script>
-    
-    </body>
+    </script>
 </body>
 </html>

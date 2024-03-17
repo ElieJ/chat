@@ -1,9 +1,9 @@
 const express = require('express');
-const { storeMessage, getMessagesByRoom, getRooms} = require('../controllers/message.controller');
+const { storeMessages, getMessagesByRoom, getRooms} = require('../controllers/message.controller');
 const router = express.Router({mergeParams: true});
 
 // Registration route
-router.post('/', storeMessage);
+router.post('/', storeMessages);
 
 router.get('/', getMessagesByRoom)
 

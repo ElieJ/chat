@@ -3,33 +3,32 @@ const router = express.Router();
 const db = require('../models/index')
 
 // Store a new message
-const storeMessage = async (req, res) => {
+const storeMessages = async (req, res) => {
     try {
         const { user_id, room_id } = req.params;
-        console.log(req.params)
-        const { message } = req.body;
+        const { messages } = req.body;
 
-        console.log(message + " message ")
-        console.log(user_id + " user  ")
-        console.log(room_id+ " room ")
+        console.log(`User ID: ${user_id}, Room ID: ${room_id}, Messages: ${messages}`);
 
-        if (!user_id || !room_id || !message) {
-            return res.status(400).send({ error: 'All fields are required.' });
+        if (!user_id || !room_id || !messages || !messages.length) {
+            return res.status(400).send({ error: 'All fields are required and messages cannot be empty.' });
         }
-        const newMessage = await db.Message.create({
-            user_id: user_id, 
-            room_id: room_id,
-            context: message,
-        });
 
-        console.log(newMessage)
-        res.status(201).send(newMessage);
+        const newMessages = await Promise.all(messages.map(message => 
+            db.Message.create({
+                user_id: user_id, 
+                room_id: room_id,
+                context: message,
+            })
+        ));
+
+        console.log(newMessages);
+        res.status(201).send(newMessages);
     } catch (error) {
-        console.error('Error saving message to database:', error);
-        res.status(500).send({ error: 'An error occurred while storing the message.' });
+        console.error('Error saving messages to database:', error);
+        res.status(500).send({ error: 'An error occurred while storing the messages.' });
     }
 };
-
 // Retrieve messages for a specific room
 const getMessagesByRoom = async (req, res) => {
     try {
@@ -51,6 +50,6 @@ const getMessagesByRoom = async (req, res) => {
 };
 
 module.exports = {
-    storeMessage,
+    storeMessages,
     getMessagesByRoom
 };
